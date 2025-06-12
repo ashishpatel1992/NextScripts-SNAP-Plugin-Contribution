@@ -526,7 +526,7 @@ if (!function_exists('nxs_getnxsLog')){ function nxs_getnxsLog($prm='',$pg=0){ g
     $whOut = ((!empty($wh) || !empty($wh2))?' WHERE ':'').$wh.((!empty($wh) && !empty($wh2))?' AND ':'').$wh2;
     echo "| ".$whOut." |<br/>"; */
   }
-	$sql = $wpdb->prepare( "SELECT * FROM %s ORDER BY id DESC LIMIT %d, 300", $wpdb->prefix.'nxs_log'.$whOut, $pg);
+  $sql = $wpdb->prepare("SELECT * FROM `" . $wpdb->prefix . "nxs_log` $whOut ORDER BY id DESC LIMIT %d, 300", $pg);
 	$log = $wpdb->get_results($sql, ARRAY_A);  if (!is_array($log)) return array(); else return $log;
 }}
 
@@ -534,57 +534,67 @@ if (!function_exists('nxs_do_this_hourly')){ function nxs_do_this_hourly() { glo
   if (isset($nxs_SNAP)) $options = $nxs_SNAP->nxs_options;  if (!empty($options) && !empty($options['numLogRows'])) $numLogRows = $options['numLogRows']; else $numLogRows = 1000;
 	// Update the 'flt' column to "snap" where 'flt' is NULL or empty
 	$wpdb->query(
-		$wpdb->prepare(
-			'UPDATE %s SET flt = %s WHERE flt IS NULL OR flt = %s',
-			$wpdb->prefix . 'nxs_log',
-			'snap',
-			''
-		)
-	);
+            $wpdb->prepare(
+                'UPDATE `' . $wpdb->prefix . 'nxs_log` SET flt = %s WHERE flt IS NULL OR flt = %s',
+                'snap',
+                ''
+            )
+        );
 // prr($wpdb->last_query);
 // prr($wpdb->last_error);
 
 // Delete rows where 'flt' is "cron" and 'id' is not in the last 360 records
 	$wpdb->query(
-		$wpdb->prepare(
-			'DELETE FROM %s WHERE flt = %s AND id NOT IN (
-            SELECT id FROM (
-                SELECT id FROM %s ORDER BY id DESC LIMIT 360
-            ) foo
-        )',
-			$wpdb->prefix . 'nxs_log',
-			'cron',
-			$wpdb->prefix . 'nxs_log'
-		)
-	);
+            $wpdb->prepare(
+                'DELETE FROM `' . $wpdb->prefix . 'nxs_log` WHERE flt = %s AND id NOT IN (
+                    SELECT id FROM (
+                        SELECT id FROM `' . $wpdb->prefix . 'nxs_log` ORDER BY id DESC LIMIT 360
+                    ) foo
+                )',
+                'cron'
+            )
+        );
 // prr($wpdb->last_query);
 // prr($wpdb->last_error);
 
 // Delete rows where 'id' is less than or equal to the 'id' at the offset specified by $numLogRows
 	$wpdb->query(
-		$wpdb->prepare(
-			'DELETE FROM %s WHERE id <= (
-            SELECT id FROM (
-                SELECT id FROM %s ORDER BY id DESC LIMIT 1 OFFSET %d
-            ) foo
-        )',
-			$wpdb->prefix . 'nxs_log',
-			$wpdb->prefix . 'nxs_log',
-			$numLogRows
-		)
-	);
+            $wpdb->prepare(
+                'DELETE FROM `' . $wpdb->prefix . 'nxs_log` WHERE id <= (
+                    SELECT id FROM (
+                        SELECT id FROM `' . $wpdb->prefix . 'nxs_log` ORDER BY id DESC LIMIT 1 OFFSET %d
+                    ) foo
+                )',
+                $numLogRows
+            )
+        );
 // prr($wpdb->last_query);
 // prr($wpdb->last_error);
   //## ErrorLog to Email
-  if (isset($options['errNotifEmailCB']) && (int)$options['errNotifEmailCB'] == 1 && isset($options['errNotifEmail']) && trim($options['errNotifEmail']) != '') { $logToSend = maybe_unserialize(get_option('NSX_LogToEmail')); //  prr($logToSend);
-    if (is_array($logToSend) && count($logToSend)>0) { $to = $options['errNotifEmail']; $subject = "SNAP Error Log for ".$_SERVER["SERVER_NAME"]; $message = print_r($logToSend, true);
-      $eml = get_bloginfo('admin_email'); if (trim($eml)=='') $eml = "snap-notify@".str_ireplace('www.','',$_SERVER["SERVER_NAME"]); 
-      $headers = "From: " . $eml . "\r\n"; $headers .= "Reply-To: ". $eml . "\r\n"; $headers .= "MIME-Version: 1.0\r\n";
-      $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n"; $retval = wp_mail($to, $subject, $message, $headers); echo ($to ."|". $subject."|". $message."|". $headers); nxsLogIt('Ready to Send');
-      if ($retval == true) $logMsg = array('type'=>'S', 'msg'=>'Log sent to email '.$options['errNotifEmail'], 'extInfo'=>count($logToSend).' records sent');  
-        else  $logMsg = array('type'=>'ER', 'msg'=>'[FALIED] Log to email '.$options['errNotifEmail'], 'extInfo'=>count($logToSend).' records were NOT sent');          
-      nxsLogIt($logMsg); delete_option("NSX_LogToEmail");  
-  }}  
+    if (isset($options['errNotifEmailCB']) && (int)$options['errNotifEmailCB'] == 1 && isset($options['errNotifEmail']) && trim($options['errNotifEmail']) != '') {
+        $logToSend = maybe_unserialize(get_option('NSX_LogToEmail'));
+        if (is_array($logToSend) && count($logToSend) > 0) {
+            $to = $options['errNotifEmail'];
+            $subject = "SNAP Error Log for " . $_SERVER["SERVER_NAME"];
+            $message = print_r($logToSend, true);
+            $eml = get_bloginfo('admin_email');
+            if (trim($eml) == '') $eml = "snap-notify@" . str_ireplace('www.', '', $_SERVER["SERVER_NAME"]);
+            $headers = "From: " . $eml . "\r\n";
+            $headers .= "Reply-To: " . $eml . "\r\n";
+            $headers .= "MIME-Version: 1.0\r\n";
+            $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
+            $retval = wp_mail($to, $subject, $message, $headers);
+            if ($retval == true) {
+                $logMsg = array('type' => 'S', 'msg' => 'Log sent to email ' . $options['errNotifEmail'], 'extInfo' => count($logToSend) . ' records sent');
+            } else {
+                $logMsg = array('type' => 'ER', 'msg' => '[FAILED] Log to email ' . $options['errNotifEmail'], 'extInfo' => count($logToSend) . ' records were NOT sent');
+            }
+            nxsLogIt($logMsg);
+            delete_option("NSX_LogToEmail");
+        }
+    }
+    
+
 }}
 
 if (!function_exists('nxs_getSNAP_post_meta')){ function nxs_getSNAP_post_meta($postID, $nt){ $poOut = array(); $po =  maybe_unserialize(get_post_meta($postID, 'snap'.$nt, true)); 

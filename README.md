@@ -16,6 +16,11 @@ These issues were resolved by updating the plugin's PHP code to:
 - Ensure proper table schema creation for wp_nxs_log and wp_nxs_query.
 - Implement error handling and email notifications for database errors using wp_mail.
 
+## Changelog
+### Version 4.4.6-patch1 (June 12, 2025)
+- **Fixed SQL Syntax Errors**: Updated queries in `nxs_do_this_hourly` and `nxs_checkQuery` to use backticks (`` ` ``) instead of single quotes for table names (`wp_nxs_log`, `wp_nxs_query`), resolving MariaDB 10.6.22 compatibility issues.
+- **Fixed Missing `id` Column**: Ensured `wp_nxs_query` table schema includes the `id` column, fixing `Unknown column 'id'` errors.
+- **Added Email Notifications**: Implemented `nxs_send_error_email` function to send `wp_mail` notifications for database errors, using SNAP’s existing email settings.
 
 ## Contribution
 This contribution is provided as a patch for the free version of the NextScripts SNAP plugin. The changes fix the SQL query issues and improve compatibility with recent WordPress and MariaDB versions. The modified code is shared to help other users facing similar problems.

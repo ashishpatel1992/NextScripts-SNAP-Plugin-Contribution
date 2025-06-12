@@ -149,8 +149,9 @@ if (!function_exists("nxs_checkQuery")){ function nxs_checkQuery(){ set_time_lim
     //## / Debug only - delete later - shows all reords in the Query
 
     //## Get count of tasks
-    $ttr = "FROM ". $wpdb->prefix . "nxs_query WHERE timetorun<'".date_i18n('Y-m-d H:i:s')."'";
-	$quPostsCnt = $wpdb->get_var($wpdb->prepare("SELECT COUNT(id) %s", $ttr));
+    $current_time = date_i18n('Y-m-d H:i:s');
+    $sql_count = $wpdb->prepare("SELECT COUNT(id) FROM `" . $wpdb->prefix . "nxs_query` WHERE timetorun < %s", $current_time);
+    $quPostsCnt = $wpdb->get_var($sql_count);
 	if ($isDebug) prr($ttr, 'TTR:');
 	if ($isDebug) prr($quPostsCnt, 'COUNT:');
 	if ((int)$quPostsCnt<1) return; //## Nothing in Query - return;
