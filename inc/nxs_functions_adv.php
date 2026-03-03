@@ -427,42 +427,42 @@ if (!function_exists('nxs_rpstPopupCode')) { function nxs_rpstPopupCode() {
 }}
 
 //## ShortCode [nxs_links acctype='' accnum=0 useicons='']
-if (!function_exists('nxs_links_func')) { function nxs_links_func( $atts ) { extract( shortcode_atts( array('accnum' => '0', 'acctype' => '', 'useicons' => ''), $atts ) );  $txtOut = ''; global $nxs_snapAvNts; $pid = get_the_ID();   
-  if (!empty($acctype)) { $po =  maybe_unserialize(get_post_meta($pid, 'snap'.strtoupper($acctype), true)); foreach ($nxs_snapAvNts as $avNt) if (strtoupper($acctype)==$avNt['code']) break;
-    if (is_array($po)) {
-      if (!empty($accnum)) {
-        if (is_array($po[$accnum]) && !empty($po[$accnum]['postURL'])){ $po = $po[$accnum]['postURL'];
-          $txtOut .= '<a target="_blank" href="'.$po.'">'.(!empty($useicons)?'<img class="nxs-bklIcon" src="'.NXS_PLURL.'img/'.$avNt['lcode'].'16.png"/>':'').$avNt['name'].'</a><br/>';
+if (!function_exists('nxs_links_func')) { function nxs_links_func( $atts ) { extract( shortcode_atts( array('accnum' => '0', 'acctype' => '', 'useicons' => ''), $atts ) );  $txtOut = ''; global $nxs_snapAvNts; $pid = get_the_ID();
+    if (!empty($acctype)) { $po =  maybe_unserialize(get_post_meta($pid, 'snap'.strtoupper($acctype), true)); foreach ($nxs_snapAvNts as $avNt) if (strtoupper($acctype)==$avNt['code']) break;
+        if (is_array($po)) {
+            if (!empty($accnum)) {
+                if (is_array($po[$accnum]) && !empty($po[$accnum]['postURL'])){ $po = $po[$accnum]['postURL'];
+                    $txtOut .= '<a target="_blank" href="'.esc_url($po).'">'.(!empty($useicons)?'<img class="nxs-bklIcon" src="'.esc_url(NXS_PLURL.'img/'.$avNt['lcode'].'16.png').'"/>':'').esc_html($avNt['name']).'</a><br/>';
+                }
+            } else foreach ($po as $pp) {
+                if (is_array($pp) && !empty($pp['postURL'])){ $po = $pp['postURL'];
+                    $txtOut .= '<a target="_blank" href="'.esc_url($po).'">'.(!empty($useicons)?'<img class="nxs-bklIcon" src="'.esc_url(NXS_PLURL.'img/'.$avNt['lcode'].'16.png').'"/>':'').esc_html($avNt['name']).'</a><br/>';
+                }
+            }
         }
-      } else foreach ($po as $pp) { 
-        if (is_array($pp) && !empty($pp['postURL'])){ $po = $pp['postURL'];
-          $txtOut .= '<a target="_blank" href="'.$po.'">'.(!empty($useicons)?'<img class="nxs-bklIcon" src="'.NXS_PLURL.'img/'.$avNt['lcode'].'16.png"/>':'').$avNt['name'].'</a><br/>';
+    } else  foreach ($nxs_snapAvNts as $avNt) { $po = maybe_unserialize(get_post_meta($pid, 'snap'.strtoupper($avNt['code']), true));
+        if (is_array($po)) {
+            if (!empty($accnum)) {
+                if (is_array($po[$accnum]) && !empty($po[$accnum]['postURL'])){ $po = $po[$accnum]['postURL'];
+                    $txtOut .= '<a target="_blank" href="'.esc_url($po).'">'.(!empty($useicons)?'<img class="nxs-bklIcon" src="'.esc_url(NXS_PLURL.'img/'.$avNt['lcode'].'16.png').'"/>':'').esc_html($avNt['name']).'</a><br/>';
+                }
+            } else foreach ($po as $pp) {
+                if (is_array($pp) && !empty($pp['postURL'])){ $po = $pp['postURL'];
+                    $txtOut .= '<a target="_blank" href="'.esc_url($po).'">'.(!empty($useicons)?'<img style="padding-right: 3px;" src="'.esc_url(NXS_PLURL.'img/'.$avNt['lcode'].'16.png').'"/>':'').esc_html($avNt['name']).'</a><br/>';
+                }
+            }
         }
-      }
     }
-  } else  foreach ($nxs_snapAvNts as $avNt) { $po = maybe_unserialize(get_post_meta($pid, 'snap'.strtoupper($avNt['code']), true));
-    if (is_array($po)) {
-      if (!empty($accnum)) {
-        if (is_array($po[$accnum]) && !empty($po[$accnum]['postURL'])){ $po = $po[$accnum]['postURL'];
-          $txtOut .= '<a target="_blank" href="'.$po.'">'.(!empty($useicons)?'<img class="nxs-bklIcon" src="'.NXS_PLURL.'img/'.$avNt['lcode'].'16.png"/>':'').$avNt['name'].'</a><br/>';
-        }
-      } else foreach ($po as $pp) { 
-        if (is_array($pp) && !empty($pp['postURL'])){ $po = $pp['postURL'];
-          $txtOut .= '<a target="_blank" href="'.$po.'">'.(!empty($useicons)?'<img style="padding-right: 3px;" src="'.NXS_PLURL.'img/'.$avNt['lcode'].'16.png"/>':'').$avNt['name'].'</a><br/>';
-        }
-      }
-    }
-  }
-  return $txtOut;
+    return $txtOut;
 }}
 
 //## ShortCode [nxs_fbembed accnum=0]
 if (!function_exists("nxs_postedlinks_func")) {function nxs_postedlinks_func( $atts ) { extract( shortcode_atts( array('accnum' => '0'), $atts ) );  $pid = get_the_ID();   global $nxs_snapAvNts; $txtOut = '';
   global $plgn_NS_SNAutoPoster; if (!isset($plgn_NS_SNAutoPoster)) return; $options = $plgn_NS_SNAutoPoster->nxs_options;
 
-   foreach ($nxs_snapAvNts as $avNt) { $opt =  get_post_meta($pid, 'snap'.$avNt['code'], true); $opt =  maybe_unserialize($opt); 
-       if (!empty($opt) && is_array($opt)) foreach ($opt as $ii=>$op) { 
-          if (!empty($op['postURL'])) $txtOut .= '<a href="'.$op['postURL'].'">'.$avNt['name'].(!empty($options[$avNt['lcode']][$ii]['nName'])?' ('.$options[$avNt['lcode']][$ii]['nName'].')':'').'</a><br/>';
+   foreach ($nxs_snapAvNts as $avNt) { $opt =  get_post_meta($pid, 'snap'.$avNt['code'], true); $opt =  maybe_unserialize($opt);
+       if (!empty($opt) && is_array($opt)) foreach ($opt as $ii=>$op) {
+           if (!empty($op['postURL'])) $txtOut .= '<a href="'.esc_url($op['postURL']).'">'.esc_html($avNt['name']).(!empty($options[$avNt['lcode']][$ii]['nName'])?' ('.esc_html($options[$avNt['lcode']][$ii]['nName']).')':'').'</a><br/>';
        }
    } return $txtOut;
 }}

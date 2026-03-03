@@ -16,7 +16,19 @@ These issues were resolved by updating the plugin's PHP code to:
 - Ensure proper table schema creation for wp_nxs_log and wp_nxs_query.
 - Implement error handling and email notifications for database errors using wp_mail.
 
+## ☕ Support
+
+If this maintained SNAP contribution is useful to you, please consider supporting ongoing maintenance and fixes.
+
+<a href="https://buymeacoffee.com/ashishpatel.dev" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
+
 ## Changelog
+### Version 4.4.7-patch1 (March 03, 2026)
+- **Upstream Uptake to 4.4.7**: Synced plugin codebase with upstream `social-networks-auto-poster-facebook-twitter-g-4.4.7` release changes.
+- **Preserved Patch1 Database Fixes**: Re-applied SQL compatibility fixes in `inc/nxs_functions_engine.php` and `inc/nxs_functions_wp.php` to avoid invalid prepared statements and table-name quoting issues.
+- **Kept Operational Error-Log Handling Improvements**: Retained the corrected error log email handling logic (including typo fix and removal of debug output side effects) from `4.4.6-patch1`.
+- **Windows Line-Ending Normalization**: Added `.gitattributes` to prevent CRLF/LF noise and ensure clean cross-platform diffs.
+
 ### Version 4.4.6-patch1 (June 12, 2025)
 - **Fixed SQL Syntax Errors**: Updated queries in `nxs_do_this_hourly` and `nxs_checkQuery` to use backticks (`` ` ``) instead of single quotes for table names (`wp_nxs_log`, `wp_nxs_query`), resolving MariaDB 10.6.22 compatibility issues.
 - **Fixed Missing `id` Column**: Ensured `wp_nxs_query` table schema includes the `id` column, fixing `Unknown column 'id'` errors.
